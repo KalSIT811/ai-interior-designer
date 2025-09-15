@@ -24,6 +24,23 @@
   tailwind.config = {
     theme: {
       extend: {
+        colors: {
+            primary: {
+                DEFAULT: '#0F766E',
+                light: '#0D9488',
+                dark: '#134E4A',
+            },
+            secondary: {
+                DEFAULT: '#14B8A6',
+                light: '#2DD4BF',
+            },
+            accent: {
+                DEFAULT: '#F59E0B',
+                dark: '#D97706'
+            },
+            background: '#FAFAFA',
+            surface: '#FFFFFF',
+        },
         fontFamily: {
           sans: ['Pretendard', 'system-ui', 'sans-serif'],
         },
@@ -34,6 +51,11 @@
           'stagger-in': 'staggerIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
           'pulse-border': 'pulseBorder 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
           'slide-down': 'slideDown 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
+          'shimmer': 'shimmer 1.5s infinite linear',
+          'slide-in-left': 'slideInLeft 0.3s cubic-bezier(0, 0, 0.2, 1) forwards',
+          'slide-out-left': 'slideOutLeft 0.3s cubic-bezier(0, 0, 0.2, 1) forwards',
+          'snackbar-in': 'snackbarIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+          'snackbar-out': 'snackbarOut 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         },
         keyframes: {
           fadeIn: {
@@ -59,6 +81,26 @@
           slideDown: {
             '0%': { opacity: '0', transform: 'translateY(-1rem)' },
             '100%': { opacity: '1', transform: 'translateY(0)' },
+          },
+          shimmer: {
+            '0%': { backgroundPosition: '-1000px 0' },
+            '100%': { backgroundPosition: '1000px 0' },
+          },
+          slideInLeft: {
+            '0%': { transform: 'translateX(-100%)' },
+            '100%': { transform: 'translateX(0)' },
+          },
+          slideOutLeft: {
+            '0%': { transform: 'translateX(0)' },
+            '100%': { transform: 'translateX(-100%)' },
+          },
+          snackbarIn: {
+            '0%': { opacity: '0', transform: 'translateY(100%) scale(0.9)' },
+            '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+          },
+          snackbarOut: {
+            '0%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+            '100%': { opacity: '0', transform: 'translateY(100%) scale(0.9)' },
           }
         }
       }
@@ -66,7 +108,7 @@
   }
 </script>
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased font-sans">
+<body class="bg-background text-slate-800 antialiased font-sans">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
 </body>

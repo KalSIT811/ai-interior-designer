@@ -6,6 +6,7 @@ interface AnalysisDisplayProps {
   analysis: RoomAnalysis | null;
   error: string | null;
   onApplySuggestion: (suggestion: string) => void;
+  prompt: string;
   disabled: boolean;
   highlightedSuggestion: string | null;
   onHighlight: (suggestion: string | null) => void;
@@ -46,7 +47,8 @@ export const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
     isAnalyzing, 
     analysis, 
     error, 
-    onApplySuggestion, 
+    onApplySuggestion,
+    prompt,
     disabled,
     highlightedSuggestion,
     onHighlight
@@ -106,57 +108,84 @@ export const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
             
             <AccordionSection title="구체적인 개선 제안" defaultOpen={true}>
                 <div className="space-y-2">
-                {analysis.improvementSuggestions.map((suggestionItem, i) => (
-                    <div 
-                        key={i} 
-                        className={`flex items-center justify-between p-2 rounded-md group transition-all duration-200 ${highlightedSuggestion === suggestionItem.suggestion ? 'bg-teal-100/50' : 'hover:bg-slate-100/80 hover:scale-[1.02]'}`}
-                        onMouseEnter={() => onHighlight(suggestionItem.suggestion)}
-                        onMouseLeave={() => onHighlight(null)}
-                    >
-                        <span className="text-sm text-slate-800 pr-2 flex items-center gap-2">
-                          {suggestionItem.boundingBox && (
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-teal-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                          )}
-                          {suggestionItem.suggestion}
-                        </span>
-                        <button
-                            onClick={() => onApplySuggestion(suggestionItem.suggestion)}
-                            disabled={disabled}
-                            className="flex-shrink-0 p-1.5 bg-white border border-slate-300 rounded-full text-slate-500 hover:bg-teal-100 hover:text-teal-700 hover:border-teal-300 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed transition-all hover:scale-110 active:scale-100"
-                            aria-label={`'${suggestionItem.suggestion}' 프롬프트에 추가`}
+                {analysis.improvementSuggestions.map((suggestionItem, i) => {
+                    const isApplied = prompt.includes(suggestionItem.suggestion);
+                    return (
+                        <div 
+                            key={i} 
+                            className={`flex items-center justify-between p-2 rounded-md group transition-all duration-200 ${highlightedSuggestion === suggestionItem.suggestion ? 'bg-teal-100/50' : 'hover:bg-slate-100/80 hover:scale-[1.02]'}`}
+                            onMouseEnter={() => onHighlight(suggestionItem.suggestion)}
+                            onMouseLeave={() => onHighlight(null)}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-                        </button>
-                    </div>
-                ))}
+                            <span className="text-sm text-slate-800 pr-2 flex items-center gap-2">
+                              {suggestionItem.boundingBox && (
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-teal-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                              )}
+                              {suggestionItem.suggestion}
+                            </span>
+                            <button
+                                onClick={() => onApplySuggestion(suggestionItem.suggestion)}
+                                disabled={disabled}
+                                className={`flex-shrink-0 p-1.5 border rounded-full transition-all hover:scale-110 active:scale-100 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed ${
+                                  isApplied 
+                                      ? 'bg-primary border-primary-dark text-white hover:bg-primary-light' 
+                                      : 'bg-white border-slate-300 text-slate-500 hover:bg-teal-100 hover:text-teal-700 hover:border-teal-300'
+                                }`}
+                                aria-label={isApplied ? `'${suggestionItem.suggestion}' 프롬프트에서 제거` : `'${suggestionItem.suggestion}' 프롬프트에 추가`}
+                            >
+                                {isApplied ? (
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                ) : (
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
+                                )}
+                            </button>
+                        </div>
+                    );
+                })}
                 </div>
             </AccordionSection>
             
             <AccordionSection title="새로운 스타일 추천">
                 <div className="space-y-2">
-                {analysis.newStyleRecommendations.map((rec, i) => (
-                    <div key={i} className="flex items-center justify-between p-2 rounded-md hover:bg-slate-100/80 group transition-all duration-200 hover:scale-[1.02]">
-                        <div className="pr-2">
-                            <p className="text-sm font-semibold text-slate-800">{rec.name}</p>
-                            <p className="text-xs text-slate-500">{rec.description}</p>
+                {analysis.newStyleRecommendations.map((rec, i) => {
+                     const suggestionText = `${rec.name} 스타일로`;
+                     const isApplied = prompt.includes(suggestionText);
+                    return (
+                        <div key={i} className="flex items-center justify-between p-2 rounded-md hover:bg-slate-100/80 group transition-all duration-200 hover:scale-[1.02]">
+                            <div className="pr-2">
+                                <p className="text-sm font-semibold text-slate-800">{rec.name}</p>
+                                <p className="text-xs text-slate-500">{rec.description}</p>
+                            </div>
+                             <button
+                                onClick={() => onApplySuggestion(suggestionText)}
+                                disabled={disabled}
+                                className={`flex-shrink-0 p-1.5 border rounded-full transition-all hover:scale-110 active:scale-100 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed ${
+                                  isApplied 
+                                      ? 'bg-primary border-primary-dark text-white hover:bg-primary-light' 
+                                      : 'bg-white border-slate-300 text-slate-500 hover:bg-teal-100 hover:text-teal-700 hover:border-teal-300'
+                                }`}
+                                aria-label={isApplied ? `'${suggestionText}' 프롬프트에서 제거` : `'${suggestionText}' 프롬프트에 추가`}
+                             >
+                                 {isApplied ? (
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                ) : (
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
+                                )}
+                            </button>
                         </div>
-                         <button
-                            onClick={() => onApplySuggestion(`${rec.name} 스타일로`)}
-                            disabled={disabled}
-                            className="flex-shrink-0 p-1.5 bg-white border border-slate-300 rounded-full text-slate-500 hover:bg-teal-100 hover:text-teal-700 hover:border-teal-300 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed transition-all hover:scale-110 active:scale-100"
-                            aria-label={`'${rec.name} 스타일로' 프롬프트에 추가`}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-                        </button>
-                    </div>
-                ))}
+                    );
+                })}
                 </div>
             </AccordionSection>
         </div>
